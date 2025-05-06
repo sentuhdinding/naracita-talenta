@@ -2,39 +2,242 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Semangat Pemuda</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Kuis Studi Kasus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    .quiz-container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .question-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: justify;
+      border-radius: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 700px;
+      background-color: #fff;
+    }
+
+    .answers {
+      margin-top: 10px;
+    }
+
+    .answers label {
+      display: block;
+      margin: 5px 0;
+    }
+
+    #question-nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 40px);
+      grid-gap: 5px;
+    }
+
+    .nav-button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .unanswered {
+      background-color: red;
+    }
+
+    .answered {
+      background-color: green;
+    }
+
+    #result {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Semangat Pemuda Indonesia</h1>
-    <p>Membangun bangsa dengan semangat, kreativitas, dan aksi nyata.</p>
-  </header>
+  <div class="quiz-container">
+    <div id="question-container"></div>
+    <div id="result"></div>
+  </div>
 
-  <main>
-    <section class="highlight">
-      <h2>Peran Pemuda</h2>
-      <p>Pemuda adalah motor penggerak perubahan. Dalam sejarah, pemuda selalu menjadi pelopor perjuangan dan pembaruan bangsa.</p>
-    </section>
+  <div id="question-nav"></div>
 
-    <section class="activities">
-      <h2>Kegiatan Pemuda</h2>
-      <ul>
-        <li>Bakti sosial di desa terpencil</li>
-        <li>Pelatihan kewirausahaan</li>
-        <li>Komunitas literasi digital</li>
-        <li>Gerakan lingkungan bersih</li>
-      </ul>
-    </section>
+  <script>
+    const questions = [
+      {
+        text: "Anda ditunjuk oleh wali kelas untuk mewakili sekolah dalam lomba debat...",
+        options: [
+          { text: "Melakukan persiapan dengan bertanya kepada teman yang pernah mengikuti kompetisi debat.", score: 3 },
+          { text: "Memotivasi diri serta meminta umpan balik dari wali kelas dan teman agar dapat berlatih dengan maksimal.", score: 4 },
+          { text: "Menerima tawaran tersebut jika diberikan pendampingan selama persiapan latihan kompetisi debat.", score: 2 },
+          { text: "Menyampaikan kekhawatiran kepada wali kelas karena merasa belum berpengalaman.", score: 1 }
+        ]
+      },
+      {
+        text: "Anda ditunjuk sebagai perwakilan sekolah untuk mengikuti Jambore Nasional...",
+        options: [
+          { text: "Mempelajari bahasa sapaan dari berbagai daerah agar dapat berkomunikasi dengan teman satu regu.", score: 2 },
+          { text: "Melibatkan diri dengan membangun komunikasi untuk mempelajari ragam budaya dari teman satu regu.", score: 4 },
+          { text: "Mencari tahu peserta jambore berasal dari daerah mana saja agar bisa menyesuaikan saat berkomunikasi.", score: 3 },
+          { text: "Meminta pendampingan dari guru untuk menemani selama kegiatan jambore berlangsung.", score: 1 }
+        ]
+      },
+      {
+        text: "Anda adalah kakak laki-laki yang memiliki adik berusia 5 tahun dengan jarak 12 tahun...",
+        options: [
+          { text: "Menelepon ibu untuk menjaga adik karena Anda harus berangkat sekolah.", score: 1 },
+          { text: "Bersedia menjaga adik agar nantinya ayah dan ibu memberikan pujian.", score: 2 },
+          { text: "Menjaga adik karena khawatir dengan kondisi yang dialaminya.", score: 3 },
+          { text: "Meminta izin kepada wali kelas untuk menjaga adik yang sakit.", score: 4 }
+        ]
+      },
+      {
+        text: "Anda dan teman Anda akan mengikuti ujian masuk perguruan tinggi...",
+        options: [
+          { text: "Menyarankan meminjam kepada orang lain.", score: 2 },
+          { text: "Mematahkan pensil kemudian memberikannya.", score: 3 },
+          { text: "Meminjamkan satu pensil 2B kepadanya.", score: 4 },
+          { text: "Meminjamkan jika ia mau berbagi jawaban.", score: 1 }
+        ]
+      },
+      {
+        text: "Anda diminta membuat karya seni miniatur bangunan pada pelajaran seni rupa...",
+        options: [
+          { text: "Mencoba tenang menyikapi kondisi tersebut dan mengajak kelompok untuk menyelesaikan tugas.", score: 1 },
+          { text: "Memperingati teman-teman untuk menyelesaikan tugas karena itu adalah tanggung jawab kelompok.", score: 3 },
+          { text: "Berusaha tenang dan menyampaikan kepada kelompok bahwa tugas tersebut juga memiliki nilai.", score: 2 },
+          { text: "Bersikap tenang dan berdiskusi dengan kelompok jika dikerjakan bersama pasti akan selesai.", score: 4 }
+        ]
+      },
+      {
+        text: "Anda adalah seorang ketua OSIS. Suatu hari Anda dimarahi guru yang terkenal galak...",
+        options: [
+          { text: "Mengendalikan emosi yang dirasakan dan memimpin rapat sesuai jadwal.", score: 4 },
+          { text: "Memimpin rapat sesuai rencana karena dimarahi guru adalah hal yang biasa.", score: 3 },
+          { text: "Menunda rapat hingga siap memimpin rapat dengan kondisi tenang.", score: 2 },
+          { text: "Membatalkan rapat karena perlu waktu untuk menenangkan pikiran dan perasaan.", score: 1 }
+        ]
+      },
+      {
+        text: "Saat perjalanan menuju sekolah motor Anda mengalami pecah ban...",
+        options: [
+          { text: "Memeriksa dan mencari tahu penyebab ban motor yang pecah.", score: 2 },
+          { text: "Menelepon keluarga untuk menyampaikan kendala yang terjadi.", score: 1 },
+          { text: "Berusaha mendorong motor sambil mencari tukang tambal ban.", score: 3 },
+          { text: "Menelepon teman kelompok untuk mengambil bahan presentasi.", score: 4 }
+        ]
+      },
+      {
+        text: "Sebagai ketua karang taruna, Anda diminta untuk memasang umbul-umbul...",
+        options: [
+          { text: "Percaya kepada tim perlengkapan dapat menyelesaikan sebelum acara dilaksanakan.", score: 2 },
+          { text: "Berdiskusi dengan tim untuk mencari jalan keluar terkait kendala yang dihadapi.", score: 4 },
+          { text: "Meminta bantuan tim lain untuk membantu tim perlengkapan.", score: 3 },
+          { text: "Melaporkan kepada ketua RW dan meminta saran terkait permasalahan tersebut.", score: 1 }
+        ]
+      },
+      {
+        text: "Sebagai ketua seksi perlengkapan HUT sekolah, Anda bertanggung jawab terhadap sound system...",
+        options: [
+          { text: "Mencari sound system pengganti dengan sisa dana yang tersedia.", score: 3 },
+          { text: "Berusaha mencari orang untuk memperbaiki sound system yang rusak.", score: 4 },
+          { text: "Menunggu saran tindakan yang harus dilakukan dari ketua panitia.", score: 1 },
+          { text: "Menggunakan sound system seadanya karena dana perlengkapan hampir habis.", score: 2 }
+        ]
+      },
+      {
+        text: "Anda dan sahabat sudah lama berteman dan sedang mengikuti seleksi beasiswa...",
+        options: [
+          { text: "Mengalihkan emosi yang dirasakan dengan belajar lebih baik untuk persiapan seleksi.", score: 3 },
+          { text: "Tetap fokus mengikuti seleksi beasiswa agar dapat lulus sesuai harapan Anda.", score: 4 },
+          { text: "Mencoba bersaing sehat dan merasa kecewa dengan sahabat mengapa ia begitu.", score: 2 },
+          { text: "Merasa sedih dan kecewa karena itu adalah emosi yang wajar dalam situasi tersebut.", score: 1 }
+        ]
+      }
+    ];
 
-    <section class="quote">
-      <blockquote>"Bangsa yang besar adalah bangsa yang menghargai jasa para pahlawannya." – Soekarno</blockquote>
-    </section>
-  </main>
+    let currentQuestion = 0;
+    let score = 0;
+    const answersState = Array(questions.length).fill(false);
 
-  <footer>
-    <p>&copy; 2025 Semangat Pemuda. Dibuat dengan cinta oleh generasi muda.</p>
-  </footer>
+    const questionContainer = document.getElementById("question-container");
+    const questionNav = document.getElementById("question-nav");
+
+    function loadQuestion(index) {
+      const q = questions[index];
+      questionContainer.innerHTML = `
+        <div class="question-box">
+          <p>${q.text}</p>
+          <div class="answers">
+            ${q.options.map((o, i) => `
+              <label>
+                <input type="radio" name="question" value="${o.score}" onclick="answerQuestion(${index}, ${o.score})">
+                ${o.text}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function answerQuestion(index, value) {
+      if (!answersState[index]) {
+        score += value;
+        answersState[index] = true;
+        document.getElementById("btn-" + index).classList.remove("unanswered");
+        document.getElementById("btn-" + index).classList.add("answered");
+      }
+
+      const next = answersState.findIndex((v, i) => !v && i > index);
+      if (next >= 0) loadQuestion(next);
+      else if (answersState.every(v => v)) showResult();
+    }
+
+    function showResult() {
+      questionContainer.innerHTML = `<p id="result">Skor Anda: ${score}</p>`;
+    }
+
+    function setupNavigation() {
+      questionNav.innerHTML = "";
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i + 1;
+        btn.id = "btn-" + i;
+        btn.className = "nav-button unanswered";
+        btn.onclick = () => loadQuestion(i);
+        questionNav.appendChild(btn);
+      }
+    }
+
+    setupNavigation();
+    loadQuestion(0);
+  </script>
 </body>
 </html>
